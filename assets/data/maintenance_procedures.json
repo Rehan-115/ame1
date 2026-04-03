@@ -1,0 +1,230 @@
+{
+  "procedures": [
+    {
+      "id": "proc_001",
+      "name": "Engine Oil Change",
+      "description": "Complete engine oil and filter replacement procedure for CFM56 engines",
+      "aircraftType": "Boeing 737",
+      "ammChapter": "73-00-00",
+      "estimatedTime": "45 minutes",
+      "toolsRequired": "Standard wrench set (17mm, 19mm), oil filter wrench, torque wrench",
+      "safetyWarning": "⚠️ CRITICAL: Engine must cool minimum 30 minutes. Improper torque can cause oil leakage.",
+      "steps": [
+        {
+          "number": 1,
+          "instruction": "Close fuel valve and shut down all engines",
+          "component": "Fuel control valve",
+          "toolsRequired": "Standard wrench set (17mm, 19mm)",
+          "safetyWarning": "⚠️ CRITICAL: Ensure engine is completely cooled before proceeding. Wait minimum 30 minutes.",
+          "expectedResult": "All engines shut down, fuel valve closed"
+        },
+        {
+          "number": 2,
+          "instruction": "Locate oil drain plug beneath engine (starboard side)",
+          "component": "Oil drain plug",
+          "toolsRequired": "Oil drain pan, wrench",
+          "expectedResult": "Oil begins draining into pan - approximately 8 liters will drain"
+        },
+        {
+          "number": 3,
+          "instruction": "Remove old oil filter and clean mounting surface thoroughly",
+          "component": "Oil filter",
+          "toolsRequired": "Oil filter wrench (adjustable 2.75-3.5 inch)",
+          "safetyWarning": "⚠️ Oil may be hot even after cooling - use protective gloves",
+          "expectedResult": "Old filter removed, mounting surface clean and dry"
+        },
+        {
+          "number": 4,
+          "instruction": "Install new oil filter with gasket lubrication",
+          "component": "New Fram PH3965 oil filter",
+          "toolsRequired": "Filter wrench, clean rag",
+          "expectedResult": "New filter hand-seated properly (finger tight)"
+        },
+        {
+          "number": 5,
+          "instruction": "Fill engine with correct oil grade (Mobil Jet Oil II)",
+          "component": "Engine oil (Mobil Jet Oil II)",
+          "toolsRequired": "Oil container, dipstick, funnel",
+          "expectedResult": "Oil level within acceptable range (between MIN and MAX markings)",
+          "safetyWarning": "Use only approved aviation oil - DO NOT use automotive oil"
+        },
+        {
+          "number": 6,
+          "instruction": "Close oil drain plug and torque to specification",
+          "component": "Oil drain plug",
+          "toolsRequired": "Torque wrench (35-45 Nm)",
+          "expectedResult": "Drain plug torqued correctly - no leaks"
+        },
+        {
+          "number": 7,
+          "instruction": "Start engine and check for oil leaks",
+          "component": "Engine",
+          "toolsRequired": "N/A",
+          "safetyWarning": "⚠️ Clear area before starting. Be alert for any abnormal sounds.",
+          "expectedResult": "Engine starts smoothly, no oil leaks visible"
+        }
+      ]
+    },
+    {
+      "id": "proc_002",
+      "name": "Brake System Inspection - AMM 32-41-00",
+      "description": "Complete hydraulic brake system functional and visual inspection per AMM 32-41-00. Includes fluid level check, line inspection, and operational testing.",
+      "ammChapter": "32-41-00",
+      "aircraftType": "Boeing 737",
+      "estimatedTime": "60 minutes",
+      "toolsRequired": "Fluid level checker, pressure test kit, inspection mirrors",
+      "safetyWarning": "⚠️ Brake failure can cause catastrophic consequences. All work per TSM 32-41-00. Pressure test mandatory.",
+      "steps": [
+        {
+          "number": 1,
+          "instruction": "Park aircraft on level floor with landing gear extended (use support stands per TSM 40-00-00)",
+          "component": "Landing gear",
+          "safetyWarning": "MANDATORY: Install certified gear support stands. Do not proceed without positive landing gear locking confirmation"
+        },
+        {
+          "number": 2,
+          "instruction": "Inspect brake fluid level in reservoir",
+          "component": "Brake fluid reservoir",
+          "toolsRequired": "Flashlight",
+          "expectedResult": "Fluid level within min-max markings"
+        },
+        {
+          "number": 3,
+          "instruction": "Check brake lines for cracks or leaks",
+          "component": "Brake lines",
+          "toolsRequired": "Visual inspection tools",
+          "safetyWarning": "Do not touch pressurized lines"
+        },
+        {
+          "number": 4,
+          "instruction": "Measure brake pad thickness",
+          "component": "Brake pads",
+          "toolsRequired": "Measuring tool, caliper"
+        }
+      ]
+    },
+    {
+      "id": "proc_003",
+      "name": "Landing Gear Service - AMM 32-12-00",
+      "description": "Complete landing gear inspection, lubrication, and functional check per AMM 32-12-00 (SRM Appendix B). Includes structural inspection and pin replacement per schedule.",
+      "steps": [
+        {
+          "number": 1,
+          "instruction": "Extend landing gear and position aircraft on level surface with certified support stands (CMM 32-12-07)",
+          "component": "Landing gear assembly",
+          "safetyWarning": "CRITICAL SAFETY: Per SRM 32-12, support load must be 1.5x Maximum Landing Weight (MLW). Installation failure = catastrophic landing gear collapse"
+        },
+        {
+          "number": 2,
+          "instruction": "Inspect all gear fasteners for proper torque",
+          "component": "Gear fasteners",
+          "toolsRequired": "Torque wrench",
+          "expectedResult": "All bolts within spec"
+        },
+        {
+          "number": 3,
+          "instruction": "Apply recommended lubricant to pivot points",
+          "component": "Lubricant",
+          "toolsRequired": "Lubricant dispenser"
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "id": "comp_001",
+      "name": "Engine Oil Filter",
+      "type": "Consumable filter",
+      "description": "Hydraulic oil filter for main engine system",
+      "location": "Mounted on right engine block",
+      "material": "Aluminum housing with cellulose media",
+      "maintenance": "Replace every 100 flight hours or annually"
+    },
+    {
+      "id": "comp_002",
+      "name": "Brake Pad Assembly",
+      "type": "Friction component",
+      "description": "Main wheel brake friction material",
+      "location": "Inside landing gear wheel hub",
+      "material": "Ceramic composite",
+      "maintenance": "Replace when thickness drops below 3mm"
+    },
+    {
+      "id": "comp_003",
+      "name": "Hydraulic Pump",
+      "type": "Pressurized fluid system",
+      "description": "Main system hydraulic pressure producer",
+      "location": "Engine-mounted accessory section",
+      "material": "Cast aluminum body with steel gears",
+      "maintenance": "Check flow and pressure every 50 flight hours"
+    }
+  ],
+  "safety": [
+    {
+      "warning": "Do not disconnect hydraulic lines under pressure",
+      "procedure": "All pressurized connections must be relieved before disconnection",
+      "consequence": "Serious injury from high-pressure fluid spray",
+      "prevention": "Use proper depressurization procedures per manual"
+    },
+    {
+      "warning": "Never work on landing gear without proper support",
+      "procedure": "Use certified landing gear stands before maintenance",
+      "consequence": "Gear collapse with potential fatality",
+      "prevention": "Always place support stands before any work"
+    },
+    {
+      "warning": "Engine oil is extremely hot after operation",
+      "procedure": "Allow 30 minutes cooling before draining",
+      "consequence": "Severe burns",
+      "prevention": "Use proper PPE and wait for cooling"
+    }
+  ],
+  "tools": [
+    {
+      "name": "Torque Wrench",
+      "type": "Precision tool",
+      "description": "Digital torque wrench for fastener tightening - 0-200 Nm range",
+      "specification": "Calibrated to ±4% accuracy"
+    },
+    {
+      "name": "Oil Filter Wrench",
+      "type": "Filter service",
+      "description": "Adjustable wrench for oil filter removal",
+      "specification": "Fits 2.5-4 inch filters"
+    },
+    {
+      "name": "Landing Gear Stands",
+      "type": "Support equipment",
+      "description": "Heavy-duty aluminum stands for gear support",
+      "specification": "Load rating: 5000 lbs per stand"
+    }
+  ],
+  "diagnostics": [
+    {
+      "symptom": "Blue fluid leak",
+      "cause": "Hydraulic system rupture or seal failure",
+      "solution": "Do not operate aircraft. Locate leak source and replace damaged component.",
+      "steps": [
+        "Ground the aircraft immediately",
+        "Identify leak location from blue fluid trail",
+        "Check hose and fitting integrity",
+        "Replace damaged hose or reseal connection",
+        "Refill hydraulic system",
+        "Test pressure before flight"
+      ]
+    },
+    {
+      "symptom": "Brake warning light",
+      "cause": "Low brake fluid or pressure loss",
+      "solution": "Check system and top up as needed",
+      "steps": [
+        "Inspect brake fluid level",
+        "Look for visible leaks in brake lines",
+        "Check brake line connections",
+        "Refill if low",
+        "Test brake system",
+        "If problem persists, consult full manual"
+      ]
+    }
+  ]
+}

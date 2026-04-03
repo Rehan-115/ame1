@@ -1,0 +1,199 @@
+{
+  "amm73": {
+    "title": "Aircraft Maintenance Manual - Engine Systems (AMM 73-00-00)",
+    "filename": "AMM-73-00-00.pdf",
+    "ammChapter": "73-00-00",
+    "description": "Complete engine maintenance procedures including oil changes, inspections, condition monitoring, and repairs. Covers CFM56 and similar engines.",
+    "documentType": "Aircraft Maintenance Manual",
+    "searchIndex": {
+      "oil change": [1, 2, 3, 5, 8],
+      "engine": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "torque": [4, 6, 7, 9],
+      "cfm56": [1, 2, 3, 5],
+      "jet oil": [3, 5, 8],
+      "filter": [2, 3, 4, 5],
+      "maintenance": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "inspection": [2, 6, 7, 9],
+      "cooling": [5, 6, 8],
+      "drain plug": [2, 3, 4]
+    }
+  },
+  "amm32": {
+    "title": "Aircraft Maintenance Manual - Landing Gear & Brakes (AMM 32-00-00)",
+    "filename": "AMM-32-00-00.pdf",
+    "ammChapter": "32-00-00",
+    "description": "Landing gear assembly maintenance, brake system procedures, hydraulic components, and safety-critical inspections.",
+    "documentType": "Aircraft Maintenance Manual",
+    "searchIndex": {
+      "landing gear": [1, 2, 3, 8, 9, 12],
+      "brake": [4, 5, 6, 10, 11, 13],
+      "torque": [2, 5, 9, 12],
+      "strut": [1, 2, 3, 8],
+      "hydraulic": [4, 5, 6, 7, 10],
+      "pressure": [4, 5, 6, 7, 11],
+      "inspection": [2, 3, 8, 9, 10],
+      "maintenance": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "fluid": [5, 6, 7],
+      "wheel": [11, 12, 13],
+      "gear up": [1, 2, 9],
+      "emergency": [9, 10, 11]
+    }
+  },
+  "amm57": {
+    "title": "Aircraft Maintenance Manual - Wing Group (AMM 57-00-00)",
+    "filename": "AMM-57-00-00.pdf",
+    "ammChapter": "57-00-00",
+    "description": "Wing attachment specifications, structural maintenance procedures, fastener requirements, and panel inspection guidelines.",
+    "documentType": "Aircraft Maintenance Manual",
+    "searchIndex": {
+      "wing": [1, 2, 3, 4, 5, 6, 7],
+      "attachment": [2, 3, 4, 5, 6],
+      "torque": [3, 4, 5, 6],
+      "fastener": [2, 3, 4, 5, 6, 7],
+      "titanium": [2, 3, 4, 5],
+      "bolt": [2, 3, 4, 5, 6],
+      "structural": [1, 2, 3, 4, 5, 6, 7],
+      "panel": [4, 5, 6, 7],
+      "inspection": [3, 4, 5, 6],
+      "root": [1, 2, 3, 4, 5]
+    }
+  },
+  "amm29": {
+    "title": "Aircraft Maintenance Manual - Hydraulic Power (AMM 29-00-00)",
+    "filename": "AMM-29-00-00.pdf",
+    "ammChapter": "29-00-00",
+    "description": "Hydraulic system operations, fluid specifications, component maintenance, pressure testing, and safety procedures.",
+    "documentType": "Aircraft Maintenance Manual",
+    "searchIndex": {
+      "hydraulic": [1, 2, 3, 4, 5, 6, 7, 8],
+      "pressure": [2, 3, 4, 5, 6],
+      "fluid": [1, 2, 3, 5, 7],
+      "pump": [3, 4, 5],
+      "lines": [2, 3, 4, 6],
+      "system": [1, 2, 3, 4, 5, 6, 7, 8],
+      "maintenance": [1, 2, 3, 4, 5, 6, 7, 8],
+      "test": [3, 4, 5, 6, 7],
+      "accumulator": [4, 5, 6],
+      "leak": [3, 4, 5, 6]
+    }
+  },
+  "amm31": {
+    "title": "Aircraft Maintenance Manual - Instruments (AMM 31-00-00)",
+    "filename": "AMM-31-00-00.pdf",
+    "ammChapter": "31-00-00",
+    "description": "Instrument panel maintenance, installation procedures, calibration requirements, and functional testing.",
+    "documentType": "Aircraft Maintenance Manual",
+    "searchIndex": {
+      "instrument": [1, 2, 3, 4, 5],
+      "panel": [1, 2, 3, 4],
+      "torque": [2, 3, 4],
+      "mount": [1, 2, 3],
+      "installation": [2, 3, 4],
+      "calibration": [3, 4, 5],
+      "aluminum": [2, 3],
+      "test": [3, 4, 5]
+    }
+  },
+  "amm35": {
+    "title": "Aircraft Maintenance Manual - Oxygen System (AMM 35-00-00)",
+    "filename": "AMM-35-00-00.pdf",
+    "ammChapter": "35-00-00",
+    "description": "Oxygen system maintenance, connection procedures, pressure testing, and safety-critical oxygen handling protocols.",
+    "documentType": "Aircraft Maintenance Manual",
+    "searchIndex": {
+      "oxygen": [1, 2, 3, 4, 5],
+      "system": [1, 2, 3, 4, 5],
+      "pressure": [2, 3, 4, 5],
+      "connection": [2, 3, 4],
+      "leak": [3, 4, 5],
+      "test": [3, 4, 5],
+      "safety": [1, 2, 3, 4, 5],
+      "torque": [2, 3]
+    }
+  },
+  "amm27": {
+    "title": "Aircraft Maintenance Manual - Flight Controls (AMM 27-00-00)",
+    "filename": "AMM-27-00-00.pdf",
+    "ammChapter": "27-00-00",
+    "description": "Flight control system maintenance, linkage procedures, operational testing, and safety-critical control surface alignment.",
+    "documentType": "Aircraft Maintenance Manual",
+    "searchIndex": {
+      "flight control": [1, 2, 3, 4, 5],
+      "linkage": [2, 3, 4, 5],
+      "torque": [3, 4, 5],
+      "surface": [1, 2, 3, 4],
+      "control": [1, 2, 3, 4, 5],
+      "maintenance": [1, 2, 3, 4, 5],
+      "test": [3, 4, 5],
+      "alignment": [2, 3, 4]
+    }
+  },
+  "tsm": {
+    "title": "Troubleshooting Manual - System Diagnostics (TSM)",
+    "filename": "TSM-00-00-00.pdf",
+    "ammChapter": "00-00-00",
+    "description": "Comprehensive troubleshooting procedures, fault isolation, diagnostic steps, and system-level problem-solving methodologies.",
+    "documentType": "Troubleshooting Manual",
+    "searchIndex": {
+      "warning": [1, 2, 3, 4, 5],
+      "fault": [1, 2, 3, 4, 5, 6],
+      "pressure": [2, 3, 4],
+      "temperature": [2, 3, 4, 5],
+      "diagnostic": [1, 2, 3, 4, 5, 6],
+      "test": [2, 3, 4, 5],
+      "troubleshoot": [1, 2, 3, 4, 5, 6],
+      "issue": [1, 2, 3, 4, 5],
+      "system": [1, 2, 3, 4, 5, 6],
+      "failure": [2, 3, 4, 5, 6]
+    }
+  },
+  "tem": {
+    "title": "Tool & Equipment Manual - TEM 05-00-00",
+    "filename": "TEM-05-00-00.pdf",
+    "ammChapter": "05-00-00",
+    "description": "Required tools, precision equipment, calibration procedures, and tool safety requirements for all maintenance tasks.",
+    "documentType": "Tool & Equipment Manual",
+    "searchIndex": {
+      "torque wrench": [1, 2, 3, 4],
+      "calibration": [1, 2, 3, 4, 5],
+      "wrench": [1, 2, 3, 4],
+      "tools": [1, 2, 3, 4, 5, 6],
+      "equipment": [1, 2, 3, 4, 5],
+      "test": [3, 4, 5],
+      "meter": [3, 4, 5],
+      "pressure": [4, 5]
+    }
+  },
+  "cmm": {
+    "title": "Component Maintenance Manual - CMM",
+    "filename": "CMM-00-00-00.pdf",
+    "ammChapter": "00-00-00",
+    "description": "Off-aircraft component maintenance procedures, overhaul instructions, and component-level repair specifications.",
+    "documentType": "Component Maintenance Manual",
+    "searchIndex": {
+      "component": [1, 2, 3, 4, 5],
+      "maintenance": [1, 2, 3, 4, 5],
+      "overhaul": [2, 3, 4, 5],
+      "repair": [2, 3, 4, 5],
+      "replacement": [1, 2, 3, 4],
+      "test": [3, 4, 5],
+      "assembly": [2, 3, 4, 5]
+    }
+  },
+  "srm": {
+    "title": "Structural Repair Manual - SRM",
+    "filename": "SRM-00-00-00.pdf",
+    "ammChapter": "00-00-00",
+    "description": "Structural damage assessment, repair procedures, damage limits, and fastener replacement requirements.",
+    "documentType": "Structural Repair Manual",
+    "searchIndex": {
+      "damage": [1, 2, 3, 4, 5],
+      "repair": [1, 2, 3, 4, 5, 6],
+      "structural": [1, 2, 3, 4, 5],
+      "fastener": [2, 3, 4, 5],
+      "crack": [2, 3, 4, 5],
+      "limit": [1, 2, 3, 4],
+      "approved": [2, 3, 4, 5]
+    }
+  }
+}

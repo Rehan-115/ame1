@@ -1,0 +1,168 @@
+{
+  "specs": [
+    {
+      "component": "Wing Root Attachment",
+      "bolt": "M14 Titanium",
+      "value": 150,
+      "unit": "Nm",
+      "range": "140-160 Nm",
+      "material": "Titanium Grade 5",
+      "ammRef": "AMM 57-00-00 (Wing Group)",
+      "procedure": "Use calibrated digital torque wrench per TEM 05-00-00. Check bolt head for marking. Tighten in criss-cross pattern.",
+      "safety": "Do not exceed specification. Risk of structural failure. Re-check after first 10 flight hours."
+    },
+    {
+      "component": "Engine Mount",
+      "bolt": "M12 Structural",
+      "value": 120,
+      "unit": "Nm",
+      "range": "110-130 Nm",
+      "material": "Alloy Steel",
+      "ammRef": "AMM 70-00-00 (Powerplant)",
+      "procedure": "Engine must be cold. Torque in ascending sequence per TEM.",
+      "safety": "Inadequate torque can cause engine shift during flight. Safety critical."
+    },
+    {
+      "component": "Fuselage Panel",
+      "bolt": "M8 Flush Head",
+      "value": 30,
+      "unit": "Nm",
+      "range": "28-32 Nm",
+      "material": "Aluminum Alloy",
+      "ammRef": "AMM 56-00-00 (Fuselage)",
+      "procedure": "Use flush socket per TEM. Ensure washer is seated properly.",
+      "safety": "Over-tightening strips threads. Environmental sealing critical."
+    },
+    {
+      "component": "Landing Gear Strut",
+      "bolt": "M16 Steel",
+      "value": 180,
+      "unit": "Nm",
+      "range": "170-190 Nm",
+      "material": "Structural Steel",
+      "ammRef": "AMM 32-12-00 (Landing Gear)",
+      "procedure": "Gear must be fully extended. Use locking compound on all connections per SRM.",
+      "safety": "Under-torquing causes gear collapse. CRITICAL - re-check monthly."
+    },
+    {
+      "component": "Brake Assembly",
+      "bolt": "M10 Stainless",
+      "value": 85,
+      "unit": "Nm",
+      "range": "80-90 Nm",
+      "material": "Stainless Steel",
+      "ammRef": "AMM 32-00-00 (Landing Gear/Brakes)",
+      "procedure": "Torque in star pattern. Verify after tightening per TSM.",
+      "safety": "Improper torque causes brake failure. CRITICAL - perform brake test after service."
+    },
+    {
+      "component": "Door Hinge",
+      "bolt": "M8 Titanium",
+      "value": 45,
+      "unit": "Nm",
+      "range": "42-48 Nm",
+      "material": "Titanium Alloy",
+      "ammRef": "AMM 61-00-00 (Emergency Equipment)",
+      "procedure": "Support door during tightening. Check alignment after per TEM.",
+      "safety": "Ensure door operates freely without binding. Verify latch engagement."
+    },
+    {
+      "component": "Hydraulic Line Fitting",
+      "bolt": "M14 JIC",
+      "value": 65,
+      "unit": "Nm",
+      "range": "60-70 Nm",
+      "material": "Steel/Brass",
+      "ammRef": "AMM 29-00-00 (Hydraulic Power)",
+      "procedure": "Use backup wrench per TEM. System must be depressurized before work.",
+      "safety": "Hydraulic pressure testing required after connection. Check for leaks."
+    },
+    {
+      "component": "Instrument Panel Mount",
+      "bolt": "M6 Aluminum",
+      "value": 15,
+      "unit": "Nm",
+      "range": "14-16 Nm",
+      "material": "Aluminum Alloy",
+      "ammRef": "AMM 31-00-00 (Instruments)",
+      "procedure": "Gentle tightening. Do not over-torque aluminum per TEM 05-00-00.",
+      "safety": "Over-tightening damages aircraft systems. Use soft washers."
+    },
+    {
+      "component": "Oxygen System Connection",
+      "bolt": "M10 Brass",
+      "value": 25,
+      "unit": "Nm",
+      "range": "23-27 Nm",
+      "material": "Brass/Bronze",
+      "ammRef": "AMM 35-00-00 (Oxygen System)",
+      "procedure": "Ensure PTFE tape on threads per SRM. Pressurization test required.",
+      "safety": "Improper sealing causes oxygen leakage - CRITICAL. Perform leak test."
+    },
+    {
+      "component": "Flight Control Linkage",
+      "bolt": "M8 Titanium",
+      "value": 35,
+      "unit": "Nm",
+      "range": "33-37 Nm",
+      "material": "Titanium Grade 2",
+      "ammRef": "AMM 27-00-00 (Flight Controls)",
+      "procedure": "Control surfaces must be neutral. Verify movement after per TSM.",
+      "safety": "Loose linkage affects aircraft handling - CRITICAL. Perform control check."
+    }
+  ],
+  "torqueTables": {
+    "M6": {
+      "steel": "8-10 Nm",
+      "aluminum": "5-7 Nm",
+      "titanium": "7-9 Nm"
+    },
+    "M8": {
+      "steel": "22-26 Nm",
+      "aluminum": "14-18 Nm",
+      "titanium": "18-24 Nm"
+    },
+    "M10": {
+      "steel": "50-60 Nm",
+      "aluminum": "32-40 Nm",
+      "titanium": "40-50 Nm"
+    },
+    "M12": {
+      "steel": "85-105 Nm",
+      "aluminum": "55-70 Nm",
+      "titanium": "70-90 Nm"
+    },
+    "M14": {
+      "steel": "130-160 Nm",
+      "aluminum": "85-110 Nm",
+      "titanium": "105-130 Nm"
+    },
+    "M16": {
+      "steel": "190-230 Nm",
+      "aluminum": "125-150 Nm",
+      "titanium": "155-190 Nm"
+    }
+  },
+  "materials": [
+    {
+      "name": "Titanium",
+      "multiplier": 0.85,
+      "notes": "Lightweight, high strength. Use lower torque values."
+    },
+    {
+      "name": "Steel",
+      "multiplier": 1.0,
+      "notes": "Standard. Use base torque values from tables."
+    },
+    {
+      "name": "Aluminum",
+      "multiplier": 0.6,
+      "notes": "Soft metal. Never exceed specifications."
+    },
+    {
+      "name": "Stainless Steel",
+      "multiplier": 1.1,
+      "notes": "High corrosion resistance. Slightly higher torque."
+    }
+  ]
+}
