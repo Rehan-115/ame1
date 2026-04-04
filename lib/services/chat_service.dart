@@ -2,26 +2,61 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import '../models/maintenance_models.dart';
 import 'database_service.dart';
+import 'ollama_service.dart';
 
 class ChatService {
   late Map<String, dynamic> _maintenanceData;
   late Map<String, dynamic> _torqueSpecs;
   late DatabaseService _db;
+  late OllamaService _ollamaService;
 
   bool _isInitialized = false;
   bool _isInitializing = false;
+  bool _ollamaInitialized = false;
 
   // User mode: 'engineer' or 'passenger'
   String userMode = 'engineer';
 
+  // Public getter for Ollama connection status
+  bool get ollamaInitialized => _ollamaInitialized;
+
   Future<void> init(DatabaseService db) async {
     _db = db;
+    _ollamaService = OllamaService();
+
     if (!_isInitialized && !_isInitializing) {
       _isInitializing = true;
       await _loadOfflineData();
+
+      // Try to initialize Ollama connection (non-blocking)
+      try {
+        _ollamaInitialized = await _ollamaService.checkAvailability();
+        if (_ollamaInitialized) {
+          print('✓ Ollama connected successfully');
+          // Run diagnostics in background
+          _runDiagnosticsInBackground();
+        } else {
+          print('⚠ Ollama not available - using keyword search fallback');
+        }
+      } catch (e) {
+        print('Ollama initialization error: $e');
+        _ollamaInitialized = false;
+      }
+
       _isInitialized = true;
       _isInitializing = false;
     }
+  }
+
+  void _runDiagnosticsInBackground() {
+    // Run diagnostics without blocking initialization
+    Future.delayed(const Duration(seconds: 1), () async {
+      try {
+        await _ollamaService.runDiagnostics();
+      } catch (e) {
+        print('Background diagnostics error: $e');
+      }
+    });
   }
 
   void initSync(DatabaseService db) {
@@ -31,6 +66,12 @@ class ChatService {
     _torqueSpecs = {'specs': []};
     // Load data with priority - wait for completion silently
     _initializeDataWithWait();
+  }
+
+  /// Run diagnostics on all services
+  Future<Map<String, dynamic>> runServiceDiagnostics() async {
+    print('\n🔍 RUNNING SERVICE DIAGNOSTICS...\n');
+    return await _ollamaService.runDiagnostics();
   }
 
   /// Ensure data is loaded with a timeout fallback
@@ -82,6 +123,24 @@ class ChatService {
         response: response,
       );
       await _db.saveChatMessage(message);
+      print(
+          '💾 Chat message saved: User="${userMessage.substring(0, userMessage.length > 30 ? 30 : userMessage.length)}..." Response="${response.substring(0, response.length > 30 ? 30 : response.length)}..."');
+
+      // Auto-save to history for persistent tracking
+      // Detect message type based on content
+      String historyType = 'search';
+      if (userMessage
+          .contains(RegExp(r'error|fail|wrong|issue', caseSensitive: false))) {
+        historyType = 'error';
+      } else if (userMessage.contains(
+          RegExp(r'torque|spec|rpm|volt|amp', caseSensitive: false))) {
+        historyType = 'technical';
+      } else if (userMessage
+          .contains(RegExp(r'procedure|step|how|do', caseSensitive: false))) {
+        historyType = 'procedure';
+      }
+
+      await _db.saveHistoryEntry(userMessage, historyType);
     } catch (e) {
       print('Error saving chat message: $e');
     }
@@ -104,6 +163,68 @@ class ChatService {
       await _loadOfflineData();
     }
 
+    print('💬 User query: "$query"');
+    print('🤖 Ollama initialized: $_ollamaInitialized');
+
+    // Try Ollama first if available
+    if (_ollamaInitialized) {
+      try {
+        print('⏳ Attempting Ollama response...');
+        final context = _getRelevantContext(query);
+        final prompt = _ollamaService.createMaintenancePrompt(
+          query,
+          userMode: userMode,
+          context: context,
+        );
+
+        print('📝 Generated prompt: "$prompt"');
+
+        final response = await _ollamaService.generateResponse(
+          prompt,
+          timeoutSeconds: 60, // Give Ollama full time to respond
+        );
+
+        if (response.isNotEmpty) {
+          print('✅ Ollama response successful!');
+          print(
+              '📊 Response stats - Length: ${response.length}, First 100 chars: "${response.substring(0, response.length > 100 ? 100 : response.length)}"');
+          return response;
+        } else {
+          print('⚠️  Ollama returned empty response');
+        }
+      } catch (e) {
+        print('⚠️  Ollama response error: $e, falling back to keyword search');
+        // Fall through to keyword search
+      }
+    }
+
+    // Fallback to keyword-based search
+    print('🔍 Using keyword search fallback');
+    final keywordResponse = await _getKeywordBasedResponse(query);
+    print('🔑 Keyword response received: ${keywordResponse.length} characters');
+    return keywordResponse;
+  }
+
+  /// Get relevant context from loaded data for Ollama prompt
+  String _getRelevantContext(String query) {
+    final searchResults = _comprehensiveSearch(query.toLowerCase());
+
+    if (searchResults.isNotEmpty) {
+      final type = searchResults['type'] as String?;
+      final data = searchResults['data'] as Map<String, dynamic>?;
+
+      if (type == 'torque' && data != null) {
+        return 'Component: ${data['component']}, Torque: ${data['Value']} Nm';
+      } else if (type == 'procedure' && data != null) {
+        return 'Procedure: ${data['name']}, ${data['description'] ?? ''}';
+      }
+    }
+
+    return 'User mode: ${userMode == 'engineer' ? 'Engineer/Technical' : 'Passenger/Simple'}';
+  }
+
+  /// Get response using keyword-based search (original implementation)
+  Future<String> _getKeywordBasedResponse(String query) async {
     final lowerQuery = query.toLowerCase();
 
     // Try to find relevant data by searching all sources first

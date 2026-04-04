@@ -8,6 +8,7 @@ class MockDatabase {
     'maintenance_logs': [],
     'chat_messages': [],
     'tech_specs': [],
+    'history': [],
   };
 
   Future<List<Map<String, dynamic>>> query(String table,
@@ -255,7 +256,7 @@ class DatabaseService {
     try {
       final result = await db.query(
         'chat_messages',
-        orderBy: 'timestamp DESC',
+        orderBy: 'timestamp ASC', // FIXED: Show oldest first (ASC, not DESC)
         limit: 100,
       );
       return result
@@ -303,6 +304,65 @@ class DatabaseService {
           .toList();
     } catch (e) {
       return [];
+    }
+  }
+
+  // History - For tracking technical queries and searches
+  Future<void> saveHistoryEntry(String query, String type) async {
+    final db = await database;
+    try {
+      await db.insert(
+        'history',
+        {
+          'id': '${DateTime.now().millisecondsSinceEpoch}_${query.hashCode}',
+          'query': query,
+          'type': type, // 'technical', 'error', 'search', 'procedure'
+          'timestamp': DateTime.now().toUtc().toIso8601String(),
+        },
+        conflictAlgorithm: !kIsWeb ? 1 : null,
+      );
+    } catch (e) {
+      // Ignore
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getHistory({int limit = 100}) async {
+    final db = await database;
+    try {
+      final result = await db.query(
+        'history',
+        orderBy: 'timestamp DESC',
+        limit: limit,
+      );
+      return result;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getHistoryByType(String type,
+      {int limit = 50}) async {
+    final db = await database;
+    try {
+      final result = await db.query(
+        'history',
+        where: 'type = ?',
+        whereArgs: [type],
+        orderBy: 'timestamp DESC',
+        limit: limit,
+      );
+      return result;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<void> clearHistory() async {
+    final db = await database;
+    try {
+      await db.delete('history');
+    } catch (e) {
+      // Ignore
     }
   }
 

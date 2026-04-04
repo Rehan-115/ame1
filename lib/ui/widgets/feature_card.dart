@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:aeroassist_ai/core/theme/app_theme.dart';
 
 class FeatureCard extends StatefulWidget {
   const FeatureCard({
-    Key? key,
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
+    super.key,
     this.color = Colors.blue,
     this.badge,
     this.emoji,
-  }) : super(key: key);
+  });
 
   final IconData icon;
   final String title;

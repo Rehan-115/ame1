@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'dart:math' show min;
 
 import '../../core/theme/app_theme.dart';
 import '../../models/maintenance_models.dart';
@@ -38,21 +39,28 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // Load chat history
     final history = await _chatService.getChatHistory();
+    print('📚 Loaded ${history.length} messages from history');
 
     setState(() {
       // Add welcome message if no history exists
       if (history.isEmpty) {
+        print('📬 No history found, showing welcome message');
         _messages.add(
           ChatMessage(
-            text: 'Hi! I\'m AeroAssistant, your ${_userMode == 'engineer' ? 'Engineering' : 'Aircraft'} AI Assistant. How can I help you today?',
+            text:
+                'Hi! I\'m AeroAssistant, your ${_userMode == 'engineer' ? 'Engineering' : 'Aircraft'} AI Assistant. How can I help you today?',
             isUser: false,
           ),
         );
       } else {
         // Load historical messages
+        print('📖 Loading ${history.length} historical messages');
         _messages.addAll(history);
       }
     });
+
+    // Trigger rebuild to show Ollama status
+    if (mounted) setState(() {});
   }
 
   void _switchMode() {
@@ -74,17 +82,31 @@ class _ChatScreenState extends State<ChatScreen> {
       _messages.add(ChatMessage(text: userMessage, isUser: true));
     });
 
+    print('📤 Message sent by user: "$userMessage"');
+
     // Get AI response
     try {
+      print('⏳ Waiting for AI response...');
       final response = await _chatService.getResponse(userMessage);
 
+      print(
+          '📥 AI Response received: "${response.substring(0, min(response.length, 100))}..."');
+      print('📏 Response length: ${response.length} characters');
+
+      if (response.isEmpty) {
+        print('⚠️  Empty response received!');
+      }
+
       setState(() {
+        print('🔄 Adding response to UI messages list');
         _messages.add(ChatMessage(text: response, isUser: false));
+        print('✅ Total messages in UI: ${_messages.length}');
       });
 
       // Save to database
       await _chatService.saveChatMessage(userMessage, response);
     } catch (e) {
+      print('❌ Error in _sendMessage: $e');
       setState(() {
         _messages.add(
           ChatMessage(
@@ -117,7 +139,10 @@ class _ChatScreenState extends State<ChatScreen> {
             children: [
               Text(
                 'Aero',
-                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color: Colors.white),
+                style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white),
               ),
               Text(
                 'Assistant',
@@ -132,6 +157,39 @@ class _ChatScreenState extends State<ChatScreen> {
           elevation: 1,
           backgroundColor: AppTheme.primaryColor,
           actions: [
+            // Ollama Status Indicator
+            Tooltip(
+              message: _chatService.ollamaInitialized
+                  ? '✓ Ollama Connected (AI Powered)'
+                  : '⚠ Ollama Offline (Keyword Search)',
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 10.w,
+                      height: 10.h,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _chatService.ollamaInitialized
+                            ? const Color(0xFF00FF00)
+                            : Colors.grey,
+                        boxShadow: _chatService.ollamaInitialized
+                            ? [
+                                BoxShadow(
+                                  color:
+                                      const Color(0xFF00FF00).withOpacity(0.6),
+                                  blurRadius: 4,
+                                  spreadRadius: 1,
+                                ),
+                              ]
+                            : [],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Tooltip(
               message:
                   'Switch to ${_userMode == 'engineer' ? 'Passenger' : 'Engineer'} Mode',
@@ -172,33 +230,37 @@ class _ChatScreenState extends State<ChatScreen> {
     return Padding(
       padding: EdgeInsets.only(bottom: 10.h),
       child: Align(
-        alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
+        alignment:
+            message.isUser ? Alignment.centerRight : Alignment.centerLeft,
         child: Column(
           crossAxisAlignment: message.isUser
               ? CrossAxisAlignment.end
               : CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-              decoration: BoxDecoration(
-                color: message.isUser
-                    ? AppTheme.primaryColor
-                    : const Color(0xFFF0F0F0),
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              constraints: BoxConstraints(
-                maxWidth: 0.75 * MediaQuery.of(context).size.width,
-              ),
-              child: SelectableText(
-                message.text,
-                style: TextStyle(
-                  color: message.isUser ? Colors.white : const Color(0xFF333333),
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.w400,
-                  height: 1.5,
+            // AI Response - Professional Diagnostic Tool Styling
+            if (!message.isUser)
+              _buildAIResponseBubble(message.text)
+            else
+              // User Message - Simple bubble
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryColor,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                constraints: BoxConstraints(
+                  maxWidth: 0.75 * MediaQuery.of(context).size.width,
+                ),
+                child: SelectableText(
+                  message.text,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10.sp,
+                    fontWeight: FontWeight.w400,
+                    height: 1.5,
+                  ),
                 ),
               ),
-            ),
             Padding(
               padding: EdgeInsets.only(top: 4.h, left: 12.w, right: 12.w),
               child: Text(
@@ -215,6 +277,122 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  /// Professional Diagnostic Tool Response Widget
+  Widget _buildAIResponseBubble(String text) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAFAFA),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
+      ),
+      constraints: BoxConstraints(
+        maxWidth: 0.8 * MediaQuery.of(context).size.width,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SelectableText(
+            text,
+            style: TextStyle(
+              fontSize: 10.sp,
+              color: const Color(0xFF333333),
+              height: 1.6,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  /// Parse AI response into formatted sections - simplified for reliability
+  List<Widget> _parseAIResponse(String text) {
+    print("AI TEXT: $text");
+    final sections = <Widget>[];
+    final lines = text.split('\n');
+
+    for (final line in lines) {
+      final trimmed = line.trim();
+      if (trimmed.isEmpty) continue;
+
+      final lowerLine = trimmed.toLowerCase();
+      final cleanLine = trimmed.replaceAll(RegExp(r'\*+'), '');
+
+      // Bold headers detection & key sections (case-insensitive)
+      if (trimmed.contains('**') ||
+          lowerLine.contains('torque:') ||
+          lowerLine.contains('warning:') ||
+          lowerLine.contains('procedure:')) {
+        sections.add(Padding(
+          padding: EdgeInsets.symmetric(vertical: 6.h),
+          child: SelectableText(
+            cleanLine,
+            style: TextStyle(
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF1a1a1a),
+            ),
+          ),
+        ));
+      }
+      // Numbered lists
+      else if (RegExp(r'^\d+\.').hasMatch(trimmed)) {
+        sections.add(Padding(
+          padding: EdgeInsets.only(left: 12.w, top: 4.h, bottom: 4.h),
+          child: SelectableText(
+            cleanLine,
+            style: TextStyle(
+              fontSize: 10.sp,
+              color: const Color(0xFF333333),
+              height: 1.5,
+            ),
+          ),
+        ));
+      }
+      // Bullet points
+      else if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
+        sections.add(Padding(
+          padding: EdgeInsets.only(left: 12.w, top: 4.h, bottom: 4.h),
+          child: SelectableText(
+            cleanLine.replaceAll(RegExp(r'^[-•]\s*'), ''),
+            style: TextStyle(
+              fontSize: 10.sp,
+              color: const Color(0xFF333333),
+              height: 1.5,
+            ),
+          ),
+        ));
+      }
+      // Regular text
+      else {
+        sections.add(Padding(
+          padding: EdgeInsets.symmetric(vertical: 3.h),
+          child: SelectableText(
+            cleanLine,
+            style: TextStyle(
+              fontSize: 10.sp,
+              color: const Color(0xFF333333),
+              height: 1.6,
+            ),
+          ),
+        ));
+      }
+    }
+
+    return sections.isNotEmpty
+        ? sections
+        : [
+            SelectableText(
+              text,
+              style: TextStyle(
+                fontSize: 10.sp,
+                color: const Color(0xFF333333),
+                height: 1.6,
+              ),
+            ),
+          ];
+  }
+
   Widget _buildInputArea() => Container(
         padding: EdgeInsets.fromLTRB(12.w, 10.h, 12.w, 12.h),
         decoration: const BoxDecoration(
@@ -229,22 +407,25 @@ class _ChatScreenState extends State<ChatScreen> {
                 controller: _controller,
                 decoration: InputDecoration(
                   hintText: 'Ask a question...',
-                  hintStyle: TextStyle(fontSize: 10.sp, color: const Color(0xFFAAAAAA)),
+                  hintStyle: TextStyle(
+                      fontSize: 10.sp, color: const Color(0xFFAAAAAA)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.r),
-                    borderSide: const BorderSide(color: Color(0xFFE0E0E0), width: 1),
+                    borderSide:
+                        const BorderSide(color: Color(0xFFE0E0E0), width: 1),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.r),
-                    borderSide: const BorderSide(color: Color(0xFFE0E0E0), width: 1),
+                    borderSide:
+                        const BorderSide(color: Color(0xFFE0E0E0), width: 1),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.r),
                     borderSide: const BorderSide(
                         color: AppTheme.primaryColor, width: 2),
                   ),
-                  contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12.w, vertical: 10.h),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
                   filled: true,
                   fillColor: Colors.white,
                   isDense: true,

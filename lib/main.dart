@@ -11,7 +11,6 @@ import 'ui/screens/home_screen.dart';
 import 'ui/screens/maintenance_history_screen.dart';
 import 'ui/screens/maintenance_start_screen.dart';
 import 'ui/screens/smart_manual_screen.dart';
-import 'ui/screens/settings_screen.dart';
 import 'ui/screens/camera_inspection_screen.dart';
 import 'ui/screens/navigation_shell.dart';
 
@@ -60,7 +59,6 @@ class AeroAssistAIApp extends StatelessWidget {
               '/maintenance': (c) => const MaintenanceStartScreen(),
               '/manual': (c) => const SmartManualScreen(),
               '/history': (c) => const MaintenanceHistoryScreen(),
-              '/settings': (c) => const SettingsScreen(),
               '/camera': (c) => const CameraInspectionScreen(),
             },
           ),
