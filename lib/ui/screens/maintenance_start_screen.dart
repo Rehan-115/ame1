@@ -94,10 +94,6 @@ class _MaintenanceStartScreenState extends State<MaintenanceStartScreen> {
                 ),
                 SizedBox(height: 14.h),
 
-                // Dynamic Maintenance Type Alert Banner
-                _buildMaintenanceTypeBanner(),
-                SizedBox(height: 14.h),
-
                 // Maintenance Type Toggle - AOG / Scheduled / Unscheduled
                 Text(
                   'Maintenance Type',
@@ -448,77 +444,6 @@ class _MaintenanceStartScreenState extends State<MaintenanceStartScreen> {
       default:
         return AppTheme.textDark;
     }
-  }
-
-  String _getMaintenanceTypeDescription() {
-    switch (_maintenanceTypeIndex) {
-      case 0:
-        return 'Critical System Interrupt - Aircraft on Ground';
-      case 1:
-        return 'Routine Mechanical Workflow - Preventive Maintenance';
-      case 2:
-        return 'Emergency/Damage Alerts - Immediate Assessment Required';
-      default:
-        return 'Select maintenance type';
-    }
-  }
-
-  Widget _buildMaintenanceTypeBanner() {
-    final colors = [
-      const Color(0xFFFF4444),
-      const Color(0xFF00D4FF),
-      const Color(0xFFFFAA00),
-    ];
-    final icons = [
-      Icons.warning_amber_rounded,
-      Icons.check_circle_outline_rounded,
-      Icons.emergency_rounded,
-    ];
-
-    return Container(
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: colors[_maintenanceTypeIndex].withOpacity(0.08),
-        border: Border.all(
-          color: colors[_maintenanceTypeIndex].withOpacity(0.3),
-          width: 1.5,
-        ),
-        borderRadius: BorderRadius.circular(6.r),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            icons[_maintenanceTypeIndex],
-            color: colors[_maintenanceTypeIndex],
-            size: 18.sp,
-          ),
-          SizedBox(width: 10.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _getMaintenanceTypeLabel(),
-                  style: TextStyle(
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w700,
-                    color: colors[_maintenanceTypeIndex],
-                  ),
-                ),
-                SizedBox(height: 3.h),
-                Text(
-                  _getMaintenanceTypeDescription(),
-                  style: TextStyle(
-                    fontSize: 9.sp,
-                    color: colors[_maintenanceTypeIndex].withOpacity(0.7),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
