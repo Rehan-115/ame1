@@ -1,6 +1,27 @@
 # Project-level configuration.
 cmake_minimum_required(VERSION 3.14)
+# Ensure subprojects with older cmake_minimum_required do not hard-fail on
+# newer CMake versions (e.g., Firebase C++ SDK uses 3.1).
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5 CACHE STRING "Minimum CMake policy version")
 project(aeroassist_ai LANGUAGES CXX)
+
+# Allow specifying nuget.exe explicitly for plugins that require it (e.g., flutter_tts).
+# Priority: CMake cache var > env var NUGET_EXE > repo-local tools/nuget.exe
+if(NOT DEFINED NUGET_EXE OR NUGET_EXE STREQUAL "NUGET_EXE-NOTFOUND" OR NUGET_EXE STREQUAL "")
+  if(DEFINED ENV{NUGET_EXE} AND NOT "$ENV{NUGET_EXE}" STREQUAL "")
+    set(NUGET_EXE "$ENV{NUGET_EXE}" CACHE FILEPATH "NuGet executable" FORCE)
+  elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../tools/nuget.exe")
+    set(NUGET_EXE "${CMAKE_CURRENT_SOURCE_DIR}/../tools/nuget.exe"
+      CACHE FILEPATH "NuGet executable" FORCE)
+  endif()
+endif()
+
+# Ensure the repo-local tools directory is discoverable by find_program().
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../tools")
+  list(APPEND CMAKE_PROGRAM_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../tools")
+  # Also prepend PATH for subprojects that only search PATH.
+  set(ENV{PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../tools;$ENV{PATH}")
+endif()
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.

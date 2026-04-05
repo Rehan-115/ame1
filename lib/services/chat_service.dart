@@ -184,7 +184,10 @@ class ChatService {
           timeoutSeconds: 60, // Give Ollama full time to respond
         );
 
-        if (response.isNotEmpty) {
+        // 🔥 STEP 4: FORCE PRINT - Confirms data exists and is sent correctly
+        print('🚀 FINAL RESPONSE SENT TO UI: $response');
+
+        if (response.trim().isNotEmpty) {
           print('✅ Ollama response successful!');
           print(
               '📊 Response stats - Length: ${response.length}, First 100 chars: "${response.substring(0, response.length > 100 ? 100 : response.length)}"');
@@ -214,7 +217,7 @@ class ChatService {
       final data = searchResults['data'] as Map<String, dynamic>?;
 
       if (type == 'torque' && data != null) {
-        return 'Component: ${data['component']}, Torque: ${data['Value']} Nm';
+        return 'Component: ${data['component']}, Torque: ${data['value']} Nm';
       } else if (type == 'procedure' && data != null) {
         return 'Procedure: ${data['name']}, ${data['description'] ?? ''}';
       }

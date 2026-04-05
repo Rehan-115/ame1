@@ -1,11 +1,18 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'platform_info.dart';
 
 /// Service for interacting with Ollama local LLM
 /// Requires Ollama to be running on localhost:11434
 class OllamaService {
-  static const String _baseUrl =
-      'http://127.0.0.1:11434'; // Use IP explicitly, not localhost
+  // Allows override via: --dart-define=OLLAMA_BASE_URL=http://<ip>:11434
+  static const String _envBaseUrl =
+      String.fromEnvironment('OLLAMA_BASE_URL');
+
+  // Base URL varies by platform (Android emulator cannot use 127.0.0.1)
+  late String _baseUrl;
+  late final List<String> _baseUrlCandidates;
   static const String _generateEndpoint = '/api/generate';
   static const Duration _timeout = Duration(seconds: 60);
 
@@ -17,50 +24,112 @@ class OllamaService {
   String get selectedModel => _selectedModel;
   List<String> get availableModels => _availableModels;
 
+  OllamaService() {
+    _baseUrlCandidates = _resolveBaseUrlCandidates();
+    _baseUrl = _baseUrlCandidates.first;
+  }
+
+  List<String> _resolveBaseUrlCandidates() {
+    if (_envBaseUrl.isNotEmpty) {
+      return [_normalizeBaseUrl(_envBaseUrl)];
+    }
+
+    final candidates = <String>[];
+
+    if (kIsWeb) {
+      candidates.addAll(['http://127.0.0.1:11434', 'http://localhost:11434']);
+
+      final host = Uri.base.host;
+      if (host.isNotEmpty && host != 'localhost' && host != '127.0.0.1') {
+        candidates.add('http://$host:11434');
+      }
+
+      return _dedupeUrls(candidates);
+    }
+
+    if (isAndroid) {
+      // Android emulator maps host machine to 10.0.2.2
+      candidates.add('http://10.0.2.2:11434');
+    }
+
+    // iOS simulator, Windows, macOS, Linux
+    candidates.addAll(['http://127.0.0.1:11434', 'http://localhost:11434']);
+    return _dedupeUrls(candidates);
+  }
+
+  List<String> _dedupeUrls(List<String> urls) {
+    final seen = <String>{};
+    final result = <String>[];
+    for (final url in urls) {
+      final normalized = _normalizeBaseUrl(url);
+      if (seen.add(normalized)) {
+        result.add(normalized);
+      }
+    }
+    return result.isNotEmpty ? result : ['http://127.0.0.1:11434'];
+  }
+
+  String _normalizeBaseUrl(String input) {
+    var value = input.trim();
+    if (value.endsWith('/')) {
+      value = value.substring(0, value.length - 1);
+    }
+    return value;
+  }
+
   /// Check if Ollama is running and available
   Future<bool> checkAvailability() async {
-    try {
-      final response = await http
-          .get(
-            Uri.parse('$_baseUrl/api/tags'),
-          )
-          .timeout(const Duration(seconds: 5));
+    for (final candidate in _baseUrlCandidates) {
+      try {
+        final response = await http
+            .get(
+              Uri.parse('$candidate/api/tags'),
+            )
+            .timeout(const Duration(seconds: 5));
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final models = data['models'] as List<dynamic>? ?? [];
-        _availableModels = models
-            .map((m) => (m as Map<String, dynamic>)['name'] as String? ?? '')
-            .where((name) => name.isNotEmpty)
-            .toList();
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          final models = data['models'] as List<dynamic>? ?? [];
+          _availableModels = models
+              .map((m) => (m as Map<String, dynamic>)['name'] as String? ?? '')
+              .where((name) => name.isNotEmpty)
+              .toList();
 
-        _isAvailable = _availableModels.isNotEmpty;
+          _isAvailable = _availableModels.isNotEmpty;
 
-        // Prefer fastest models: gemma3:1b > orca-mini > others
-        if (_isAvailable) {
-          if (_availableModels.contains('gemma3:1b')) {
-            _selectedModel = 'gemma3:1b';
-            print('✅ Using fastest model: gemma3:1b');
-          } else if (_availableModels.contains('orca-mini:latest')) {
-            _selectedModel = 'orca-mini:latest';
-            print('✅ Using fast model: orca-mini:latest');
-          } else if (!_availableModels.contains(_selectedModel)) {
-            _selectedModel = _availableModels.first;
-            print('✅ Using available model: $_selectedModel');
+          if (_isAvailable) {
+            _baseUrl = candidate;
+            // Prefer fastest models: gemma3:1b > orca-mini > others
+            if (_availableModels.contains('gemma3:1b')) {
+              _selectedModel = 'gemma3:1b';
+              print('Using fastest model: gemma3:1b');
+            } else if (_availableModels.contains('orca-mini:latest')) {
+              _selectedModel = 'orca-mini:latest';
+              print('Using fast model: orca-mini:latest');
+            } else if (!_availableModels.contains(_selectedModel)) {
+              _selectedModel = _availableModels.first;
+              print('Using available model: $_selectedModel');
+            }
           }
-        }
 
-        print('Ollama available: $_isAvailable, Models: $_availableModels');
-        return _isAvailable;
+          print('Ollama available: $_isAvailable, Models: $_availableModels');
+          return _isAvailable;
+        }
+      } catch (e) {
+        print('Ollama check failed for $candidate: $e');
+        if (kIsWeb) {
+          print(
+              'Web hint: add OLLAMA_ORIGINS to include ${Uri.base.origin} and restart Ollama.');
+        }
+        // Try next candidate
       }
-      _isAvailable = false;
-      return false;
-    } catch (e) {
-      print('Ollama not available: $e');
-      _isAvailable = false;
-      return false;
     }
+
+    print('Ollama not available on any candidate URL: $_baseUrlCandidates');
+    _isAvailable = false;
+    return false;
   }
+
 
   /// Generate response from Ollama
   Future<String> generateResponse(
@@ -83,6 +152,8 @@ class OllamaService {
         'stream': false,
         'temperature': 0.7,
         'top_p': 0.9,
+        // Limit output length to avoid very long generations and timeouts.
+        'options': {'num_predict': 256},
         'keep_alive': '5m', // Keep model loaded for 5 minutes
       };
 
@@ -106,6 +177,8 @@ class OllamaService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final generatedText = data['response'] as String? ?? '';
+        // 🔥 STEP 5: CHECK RAW RESPONSE
+        print('🔥 RAW OLLAMA RESPONSE: ${response.body}');
         print('✅ Ollama response extracted: ${generatedText.length} chars');
         return generatedText.trim();
       } else {
@@ -197,27 +270,46 @@ class OllamaService {
     required String userMode,
     required String context,
   }) {
-    final complexity = userMode == 'passenger' ? 'simple' : 'technical';
-    final languageStyle = userMode == 'passenger'
-        ? 'Use simple, easy-to-understand language. Avoid technical jargon.'
-        : 'Use technical terms and detailed specifications. Include measurements and tolerances.';
+    final hasSpecificContext =
+        context.startsWith('Component:') || context.startsWith('Procedure:');
 
-    return '''You are an aircraft maintenance AI.
+    if (!hasSpecificContext) {
+      return '''You are AeroAssist, an aircraft maintenance assistant.
 
-Always respond EXACTLY in this format:
+Mode: $userMode
+${userMode == 'passenger' ? 'Explain in simple, non-technical language.' : 'Use technical terms, be concise, and ask for the specific component/system if needed.'}
 
-Torque:
-<value or N/A>
+Question:
+$userQuery
 
-Warning:
-<text or N/A>
+Answer briefly and stay within aircraft maintenance context.''';
+    }
 
-Procedure:
-<steps or N/A>
+    return '''You are AeroAssist AI, an Aircraft Maintenance Engineer assistant.
 
-Question: $userQuery
-Context: $context
-Mode: $complexity - $languageStyle''';
+Your role: Provide accurate, aircraft maintenance-specific information.
+
+Context Information:
+$context
+
+User Mode: $userMode
+${userMode == 'passenger' ? 'Instructions: Explain in simple, non-technical language for a passenger' : 'Instructions: Use technical terms, include specific values, references, and procedures per AMM standards'}
+
+User Question:
+$userQuery
+
+Response Guidelines:
+- Answer ONLY based on aircraft maintenance context
+- Be specific and accurate (not general knowledge)
+- If asking about components, include type, location, and maintenance info
+- If about torque/fasteners, include bolt type, torque value in Nm, and safe range if available
+- If about procedures, provide step-by-step instructions
+- Keep response clear, structured, and professional
+- DO NOT give generic or unrelated answers
+- Reference AMM (Aircraft Maintenance Manual) standards when applicable
+- For warnings, emphasize critical safety requirements
+
+Provide your answer now:''';
   }
 
   /// Comprehensive diagnostic test for Ollama connection
@@ -305,7 +397,7 @@ Mode: $complexity - $languageStyle''';
               headers: {'Content-Type': 'application/json'},
               body: jsonEncode(testPayload),
             )
-            .timeout(const Duration(seconds: 10));
+            .timeout(const Duration(seconds: 20));
 
         diagnostics['tests']['generation'] = {
           'status': response.statusCode == 200 ? 'PASS' : 'FAIL',

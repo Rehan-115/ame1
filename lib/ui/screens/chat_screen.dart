@@ -87,6 +87,7 @@ class _ChatScreenState extends State<ChatScreen> {
     // Get AI response
     try {
       print('⏳ Waiting for AI response...');
+      print("🔥 CALLING REAL AI NOW");
       final response = await _chatService.getResponse(userMessage);
 
       print(
@@ -213,8 +214,13 @@ class _ChatScreenState extends State<ChatScreen> {
                         padding: EdgeInsets.symmetric(
                             horizontal: 12.w, vertical: 12.h),
                         itemCount: _messages.length,
-                        itemBuilder: (context, index) =>
-                            _buildMessageBubble(_messages[index]),
+                        itemBuilder: (context, index) {
+                          print(
+                              '🎨 Building message bubble #$index - Total: ${_messages.length}');
+                          print(
+                              '   Message: ${_messages[index].text.substring(0, min(_messages[index].text.length, 50))}');
+                          return _buildMessageBubble(_messages[index]);
+                        },
                       ),
               ),
               _buildInputArea(),
@@ -226,6 +232,9 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildMessageBubble(ChatMessage message) {
     final timeFormat = DateFormat('HH:mm');
     final timestamp = timeFormat.format(message.timestamp);
+
+    print(
+        '🔍 _buildMessageBubble: isUser=${message.isUser}, textLength=${message.text.length}, text=${message.text.substring(0, min(message.text.length, 50))}');
 
     return Padding(
       padding: EdgeInsets.only(bottom: 10.h),
@@ -239,7 +248,10 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             // AI Response - Professional Diagnostic Tool Styling
             if (!message.isUser)
-              _buildAIResponseBubble(message.text)
+              Builder(builder: (context) {
+                print('✅ Building AI response bubble: ${message.text}');
+                return _buildAIResponseBubble(message.text);
+              })
             else
               // User Message - Simple bubble
               Container(
@@ -278,29 +290,15 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   /// Professional Diagnostic Tool Response Widget
+  /// 🔥 STEP 2: SIMPLIFIED - Removes ALL parsing logic to test UI
   Widget _buildAIResponseBubble(String text) {
+    print('🎨 _buildAIResponseBubble called with text: "$text"');
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFAFAFA),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
-      ),
-      constraints: BoxConstraints(
-        maxWidth: 0.8 * MediaQuery.of(context).size.width,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SelectableText(
-            text,
-            style: TextStyle(
-              fontSize: 10.sp,
-              color: const Color(0xFF333333),
-              height: 1.6,
-            ),
-          )
-        ],
+      padding: EdgeInsets.all(12),
+      color: Colors.white,
+      child: Text(
+        text,
+        style: TextStyle(color: Colors.black),
       ),
     );
   }
