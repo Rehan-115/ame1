@@ -16,32 +16,20 @@ class _MaintenanceStartScreenState extends State<MaintenanceStartScreen> {
   late TextEditingController _technicianController;
   late DatabaseService _db;
   String _selectedProcedure = '';
-  int _maintenanceTypeIndex = 1; // 0=AOG, 1=Scheduled, 2=Unscheduled
 
-  // Maintenance type specific procedures
-  final Map<int, List<String>> _proceduresByType = {
-    0: [
-      'Emergency Landing Checks',
-      'Critical System Inspection',
-      'Hydraulic Pressure Test',
-      'Brake System Emergency Check',
-      'Fuel System Verification'
-    ],
-    1: [
-      'Engine Oil Change',
-      'Brake System Inspection',
-      'Landing Gear Maintenance',
-      'Hydraulic System Check',
-      'Fuel System Inspection'
-    ],
-    2: [
-      'Damage Assessment',
-      'Structural Inspection',
-      'Component Damage Report',
-      'Functional Testing',
-      'Emergency Repair Procedures'
-    ],
-  };
+  // Standard procedures
+  final List<String> _procedures = [
+    'Engine Oil Change',
+    'Brake System Inspection',
+    'Landing Gear Maintenance',
+    'Hydraulic System Check',
+    'Fuel System Inspection',
+    'Emergency Landing Checks',
+    'Critical System Inspection',
+    'Hydraulic Pressure Test',
+    'Brake System Emergency Check',
+    'Fuel System Verification'
+  ];
 
   @override
   void initState() {
@@ -87,99 +75,6 @@ class _MaintenanceStartScreenState extends State<MaintenanceStartScreen> {
                             fontSize: 10.sp,
                             fontWeight: FontWeight.w500,
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 14.h),
-
-                // Maintenance Type Toggle - AOG / Scheduled / Unscheduled
-                Text(
-                  'Maintenance Type',
-                  style: TextStyle(
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w700,
-                    color: AppTheme.textDark,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6.r),
-                    border: Border.all(
-                      color: const Color(0xFFE0E0E0),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _buildToggleButton(
-                          label: 'AOG Urgent',
-                          isSelected: _maintenanceTypeIndex == 0,
-                          icon: Icons.emergency_outlined,
-                          backgroundColor: _maintenanceTypeIndex == 0
-                              ? const Color(0xFFFF4444).withOpacity(0.1)
-                              : Colors.transparent,
-                          borderColor: _maintenanceTypeIndex == 0
-                              ? const Color(0xFFFF4444)
-                              : const Color(0xFFE0E0E0),
-                          textColor: _maintenanceTypeIndex == 0
-                              ? const Color(0xFFFF4444)
-                              : AppTheme.textDark,
-                          onPressed: () {
-                            setState(() => _maintenanceTypeIndex = 0);
-                            _selectedProcedure = '';
-                          },
-                        ),
-                      ),
-                      Container(
-                        width: 1,
-                        color: const Color(0xFFE0E0E0),
-                      ),
-                      Expanded(
-                        child: _buildToggleButton(
-                          label: 'Scheduled',
-                          isSelected: _maintenanceTypeIndex == 1,
-                          icon: Icons.calendar_today_outlined,
-                          backgroundColor: _maintenanceTypeIndex == 1
-                              ? const Color(0xFF00D4FF).withOpacity(0.1)
-                              : Colors.transparent,
-                          borderColor: _maintenanceTypeIndex == 1
-                              ? const Color(0xFF00D4FF)
-                              : const Color(0xFFE0E0E0),
-                          textColor: _maintenanceTypeIndex == 1
-                              ? const Color(0xFF00D4FF)
-                              : AppTheme.textDark,
-                          onPressed: () {
-                            setState(() => _maintenanceTypeIndex = 1);
-                            _selectedProcedure = '';
-                          },
-                        ),
-                      ),
-                      Container(
-                        width: 1,
-                        color: const Color(0xFFE0E0E0),
-                      ),
-                      Expanded(
-                        child: _buildToggleButton(
-                          label: 'Unscheduled',
-                          isSelected: _maintenanceTypeIndex == 2,
-                          icon: Icons.cloud_upload_outlined,
-                          backgroundColor: _maintenanceTypeIndex == 2
-                              ? const Color(0xFFFFAA00).withOpacity(0.1)
-                              : Colors.transparent,
-                          borderColor: _maintenanceTypeIndex == 2
-                              ? const Color(0xFFFFAA00)
-                              : const Color(0xFFE0E0E0),
-                          textColor: _maintenanceTypeIndex == 2
-                              ? const Color(0xFFFFAA00)
-                              : AppTheme.textDark,
-                          onPressed: () {
-                            setState(() => _maintenanceTypeIndex = 2);
-                            _selectedProcedure = '';
-                          },
                         ),
                       ),
                     ],
@@ -237,11 +132,11 @@ class _MaintenanceStartScreenState extends State<MaintenanceStartScreen> {
 
                 // Procedure Selection
                 Text(
-                  'Select Procedure (${_getMaintenanceTypeLabel()})',
+                  'Select Procedure',
                   style: TextStyle(
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w700,
-                    color: _getMaintenanceTypeColor(),
+                    color: AppTheme.textDark,
                   ),
                 ),
                 SizedBox(height: 5.h),
@@ -249,7 +144,7 @@ class _MaintenanceStartScreenState extends State<MaintenanceStartScreen> {
                   initialValue:
                       _selectedProcedure.isEmpty ? null : _selectedProcedure,
                   hint: const Text('Choose procedure...'),
-                  items: _proceduresByType[_maintenanceTypeIndex]!
+                  items: _procedures
                       .map((proc) =>
                           DropdownMenuItem(value: proc, child: Text(proc)))
                       .toList(),
@@ -308,8 +203,6 @@ class _MaintenanceStartScreenState extends State<MaintenanceStartScreen> {
                         _buildDetailRow('Procedure', _selectedProcedure),
                         _buildDetailRow(
                             'Aircraft Type', 'Configure in settings'),
-                        _buildDetailRow(
-                            'Maintenance Type', _getMaintenanceTypeLabel()),
                         _buildDetailRow('Estimated Steps', '5 steps'),
                         _buildDetailRow('Estimated Time', '30-45 minutes'),
                       ],
@@ -340,62 +233,6 @@ class _MaintenanceStartScreenState extends State<MaintenanceStartScreen> {
           ),
         ),
       );
-
-  Widget _buildToggleButton({
-    required String label,
-    required bool isSelected,
-    required IconData icon,
-    required VoidCallback onPressed,
-    Color backgroundColor = Colors.transparent,
-    Color borderColor = const Color(0xFFE0E0E0),
-    Color textColor = const Color(0xFF666666),
-  }) =>
-      Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 8.w),
-            decoration: BoxDecoration(
-              color: backgroundColor,
-              border: Border(bottom: BorderSide(color: borderColor, width: 2)),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  icon,
-                  color: textColor,
-                  size: 18.sp,
-                ),
-                SizedBox(height: 4.h),
-                Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 9.sp,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: textColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-
-  String _getMaintenanceTypeLabel() {
-    switch (_maintenanceTypeIndex) {
-      case 0:
-        return 'AOG Urgent';
-      case 1:
-        return 'Scheduled';
-      case 2:
-        return 'Unscheduled';
-      default:
-        return 'Unknown';
-    }
-  }
 
   Widget _buildDetailRow(String label, String value) => Padding(
         padding: EdgeInsets.only(bottom: 5.h),
@@ -431,19 +268,6 @@ class _MaintenanceStartScreenState extends State<MaintenanceStartScreen> {
         backgroundColor: AppTheme.successColor,
       ),
     );
-  }
-
-  Color _getMaintenanceTypeColor() {
-    switch (_maintenanceTypeIndex) {
-      case 0:
-        return const Color(0xFFFF4444);
-      case 1:
-        return const Color(0xFF00D4FF);
-      case 2:
-        return const Color(0xFFFFAA00);
-      default:
-        return AppTheme.textDark;
-    }
   }
 
   @override
